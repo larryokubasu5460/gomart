@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  user-service:
+    build: ./user-service
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./user-service/.env
+    depends_on:
+      - user-db
+    networks:
+      - gomart
+
+  user-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: usersdbd
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - user_pgdata:/var/lib/postgresql/data
+    networks:
+      - gomart
+
+  product-service:
+    build: ./product-service
+    ports:
+      - "8081:8081"
+    env_file:
+      - ./product-service/.env
+    depends_on:
+      - product-db
+    networks:
+      - gomart
+
+  product-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: productsdb
+      POSTGRES_USER: products_user
+      POSTGRES_PASSWORD: products_pass
+
+    ports:
+      - "5433:5432"
+    volumes:
+      - product_pgdata:/var/lib/postgresql/data
+    networks:
+      - gomart
+    
+volumes:
+  user_pgdata:
+  products_pgdata:
+
+networks:
+  gomart:
